@@ -58,7 +58,7 @@ const MenuDropdown = ({ trigger, navigationData, activeSection, align = 'start' 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
-      <DropdownMenuContent className='w-56' align={align}>
+      <DropdownMenuContent className='mt-1 w-[min(93vw,800px)]' align={align}>
         {navigationData.map(navItem => {
           if (navItem.href) {
             // Extract section ID from href
