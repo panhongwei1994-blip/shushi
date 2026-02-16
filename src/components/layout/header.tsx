@@ -6,7 +6,7 @@ import ThemeToggle from '@/components/layout/theme-toggle'
 import { MenuIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 import MenuDropdown from '@/components/blocks/menu-dropdown'
 import MenuNavigation from '@/components/blocks/menu-navigation'
@@ -106,7 +106,7 @@ const Header = ({ navigationData, className }: HeaderProps) => {
         <MenuNavigation
           navigationData={navigationData}
           activeSection={activeSection}
-          className='max-lg:hidden [&_[data-slot="navigation-menu-list"]]:gap-1'
+          className='**:data-[slot=navigation-menu-list]:gap-1 max-lg:hidden'
         />
 
         {/* Actions */}
@@ -120,14 +120,16 @@ const Header = ({ navigationData, className }: HeaderProps) => {
           </Button>
 
           {/* Mobile book table button */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button className='ml-4 rounded-full sm:hidden' asChild>
-                <a href='#contact-us'>Book table</a>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Book table</TooltipContent>
-          </Tooltip>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button className='ml-4 rounded-full sm:hidden' asChild>
+                  <a href='#contact-us'>Book table</a>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Book table</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           {/* Mobile menu button */}
           <MenuDropdown
