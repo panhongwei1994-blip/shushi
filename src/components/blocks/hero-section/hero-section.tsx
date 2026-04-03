@@ -134,7 +134,7 @@ const HeroSection = ({ menudata }: { menudata: MenuData[] }) => {
             <CarouselContent>
               {menudata.map(item => (
                 <CarouselItem key={item.id} className='flex w-full items-center justify-center'>
-                  <img src={item.img} alt={item.imgAlt} className='size-95 object-contain' loading='lazy' />
+                  <img src={item.img} alt={item.imgAlt} className='size-95 object-cover rounded-[2.5rem] border-2 border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3)]' loading='lazy' />
                 </CarouselItem>
               ))}
             </CarouselContent>
@@ -167,7 +167,7 @@ const HeroSection = ({ menudata }: { menudata: MenuData[] }) => {
                         />
                       </svg>
                     </div>
-                    <img src={item.img} alt={item.imgAlt} className='size-25' loading='lazy' />
+                    <img src={item.img} alt={item.imgAlt} className='size-25 object-cover rounded-[1.5rem] border border-white/10 shadow-lg' loading='lazy' />
                   </div>
                 </CarouselItem>
               ))}

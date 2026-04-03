@@ -43,9 +43,9 @@ const AboutUs = ({ stats }: { stats: Stat[] }) => {
         {/* Video player and stats */}
         <div className='relative mb-8 h-full w-full sm:mb-16 lg:mb-24'>
           <img
-            src='/images/about-us.webp'
-            alt='About us illustration'
-            className='h-full w-full object-cover'
+            src='/images/sushi/about-us.jpg'
+            alt='about-us'
+            className='h-[35rem] w-full rounded-3xl object-cover sm:h-[45rem]'
             loading='lazy'
           />
 
