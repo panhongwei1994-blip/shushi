@@ -1,19 +1,19 @@
 // Site Configuration
 // Centralized configuration for site metadata, SEO, and branding
 
-export const SITE_TITLE = 'Demo: Bistro - Restaurant Landing Page | Shadcn Studio'
+export const SITE_TITLE = 'Sushi Zen - Premium Sushi Bar Landing Page & Omakase'
 export const SITE_DESCRIPTION =
-  'Enjoy fresh ingredients, thoughtfully prepared meals, and a welcoming space designed for memorable moments. Experience bistro dining made simple and delicious.'
+  'Experience authentic Japanese sushi, omakase, and sashimi in a modern, serene atmosphere. Handcrafted with the freshest seasonal ingredients.'
 
 export const GITHUB_URL = 'https://github.com/yourusername/shadcn-astro-bistro-landing-page'
 export const SITE_URL = 'https://shadcnstudio.com/'
 
 export const SITE_METADATA = {
   title: {
-    default: 'Demo: Bistro - Restaurant Landing Page | Shadcn Studio'
+    default: 'Sushi Zen - Premium Sushi Bar Landing Page & Omakase'
   },
   description:
-    'Enjoy fresh ingredients, thoughtfully prepared meals, and a welcoming space designed for memorable moments. Experience bistro dining made simple and delicious.',
+    'Experience authentic Japanese sushi, omakase, and sashimi in a modern, serene atmosphere. Handcrafted with the freshest seasonal ingredients.',
   keywords: [
     'Astro',
     'astro template',
@@ -55,10 +55,10 @@ export const SITE_METADATA = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    siteName: 'Bistro',
-    title: 'Demo: Bistro - Restaurant Landing Page | Shadcn Studio',
+    siteName: 'Sushi Zen',
+    title: 'Sushi Zen - Premium Sushi Bar Landing Page & Omakase',
     description:
-      'Enjoy fresh ingredients, thoughtfully prepared meals, and a welcoming space designed for memorable moments. Experience bistro dining made simple and delicious.',
+      'Experience authentic Japanese sushi, omakase, and sashimi in a modern, serene atmosphere. Handcrafted with the freshest seasonal ingredients.',
     images: [
       {
         url: '/images/og-image.png',
@@ -73,9 +73,9 @@ export const SITE_METADATA = {
     card: 'summary_large_image',
     site: '@shadcnstudio',
     creator: '@shadcnstudio',
-    title: 'Demo: Bistro - Restaurant Landing Page | Shadcn Studio',
+    title: 'Sushi Zen - Premium Sushi Bar Landing Page & Omakase',
     description:
-      'Enjoy fresh ingredients, thoughtfully prepared meals, and a welcoming space designed for memorable moments. Experience bistro dining made simple and delicious.',
+      'Experience authentic Japanese sushi, omakase, and sashimi in a modern, serene atmosphere. Handcrafted with the freshest seasonal ingredients.',
     images: ['/images/og-image.png']
   },
   verification: {

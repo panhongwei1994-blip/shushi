@@ -4,21 +4,21 @@ export const contactInfo = [
   {
     title: 'Open Hours',
     icon: Clock8Icon,
-    description: 'Monday-Friday\n8:00 am to 5:00 pm'
+    description: 'Monday-Sunday\n11:30 am to 10:00 pm'
   },
   {
     title: 'Our Address',
     icon: MapPinIcon,
-    description: '802 Perston Rd,Maine\n96812, USA'
+    description: '123 Tokyo Street, Kyoto\n100-0001, Japan'
   },
   {
     title: 'Email',
     icon: Mail,
-    description: 'info@seliziakitchen.com'
+    description: 'info@sushizen.com'
   },
   {
     title: 'Phone',
     icon: PhoneIcon,
-    description: '+1 (123) 456-7890'
+    description: '+81 (3) 1234-5678'
   }
 ]

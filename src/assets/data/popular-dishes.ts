@@ -1,30 +1,30 @@
 export const popularDishes = [
   {
-    image: '/images/popular-dishes/grilled-herb-chicken.webp',
-    alt: 'Grilled Herb Chicken',
-    name: 'Grilled Herb Chicken',
-    type: 'Main course 🥘',
-    description: 'Juicy chicken grilled with herbs and served with garlic sauce.'
+    image: '/images/sushi/sushi_hero_1775236370894.png',
+    alt: 'Premium Sushi Platter',
+    name: 'Premium Sushi Platter',
+    type: 'Chef Selection 🍣',
+    description: 'An exquisite assortment of our finest nigiri, sashimi, and maki.'
   },
   {
-    image: '/images/popular-dishes/classic-margherita-pizza.webp',
-    alt: 'Classic Margherita Pizza',
-    name: 'Classic Margherita Pizza',
-    type: 'Main course 🍕',
-    description: 'Crispy crust, fresh mozzarella, and basil a true classic.'
+    image: '/images/sushi/sushi_nigiri_1775236385846.png',
+    alt: 'Salmon & Tuna Nigiri',
+    name: 'Salmon & Tuna Nigiri',
+    type: 'Signature Nigiri 🍣',
+    description: 'Glossy, perfectly sliced salmon and bluefin tuna over warm seasoned rice.'
   },
   {
-    image: '/images/popular-dishes/spicy-shrimp-linguine.webp',
-    alt: 'Spicy Shrimp Linguine',
-    name: 'Spicy Shrimp Linguine',
-    type: 'Main course 🥘',
-    description: 'Shrimp, chili, and creamy tomato sauce tossed to perfection.'
+    image: '/images/sushi/sushi_maki_1775236433594.png',
+    alt: 'Golden Dragon Roll',
+    name: 'Golden Dragon Roll',
+    type: 'Special Maki 🐉',
+    description: 'Crispy shrimp tempura, cucumber, topped with eel, avocado, and unagi sauce.'
   },
   {
-    image: '/images/popular-dishes/chocolate-lava-cake.webp',
-    alt: 'Chocolate Lava Cake',
-    name: 'Chocolate Lava Cake',
-    type: 'Desert 🍫',
-    description: 'Warm molten cake with a scoop of vanilla ice cream.'
+    image: '/images/sushi/sushi_sashimi_1775236450252.png',
+    alt: 'Deluxe Sashimi Bowl',
+    name: 'Deluxe Sashimi Bowl',
+    type: 'Sashimi 🍱',
+    description: 'The freshest, most vibrant cuts of seasonal fish resting on a bed of ice.'
   }
 ]

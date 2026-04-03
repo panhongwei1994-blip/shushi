@@ -4,12 +4,12 @@ export const stats = [
   {
     icon: SparklesIcon,
     value: '20+',
-    description: ['Years of Culinary', 'Expertise']
+    description: ['Years of Sushi', 'Artistry']
   },
   {
     icon: ChefHat,
     value: '70+',
-    description: ['Signature Dishes', 'Perfected']
+    description: ['Sushi Masterpieces', 'Handcrafted']
   },
   {
     icon: Users,

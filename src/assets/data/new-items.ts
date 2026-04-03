@@ -1,26 +1,26 @@
 export const newItems = [
   {
-    img: '/images/new-items/new-items-01.webp',
-    alt: 'Lemon Herb Grilled Salmon',
-    title: 'Lemon Herb Grilled Salmon',
+    img: '/images/sushi/sushi_sashimi_1775236450252.png',
+    alt: 'Truffle Salmon Carpaccio',
+    title: 'Truffle Salmon Carpaccio',
     description:
-      'Delight in the perfect balance of zesty lemon and savoury herbs, beautifully paired with a fresh garden salad.',
+      'Thinly sliced fresh salmon drizzled with truffle ponzu, topped with microgreens.',
     blogLink: '#'
   },
   {
-    img: '/images/new-items/new-items-02.webp',
-    alt: 'Spicy Mango Chicken',
-    title: 'Spicy Mango Chicken',
+    img: '/images/sushi/sushi_maki_1775236433594.png',
+    alt: 'Volcano Roll',
+    title: 'Volcano Roll',
     description:
-      'A sweet and spicy fusion of tender chicken breast combined with ripe mango and a delightful chili kick.',
+      'Spicy tuna and crab meat baked with spicy mayo, topped with crispy tempura flakes.',
     blogLink: '#'
   },
   {
-    img: '/images/new-items/new-items-03.webp',
-    alt: 'Vegetarian Tempeh Stir Fry',
-    title: 'Vegetarian Tempeh Stir Fry',
+    img: '/images/sushi/sushi_nigiri_1775236385846.png',
+    alt: 'Otoro Nigiri Box',
+    title: 'Otoro Nigiri Box',
     description:
-      'A healthy, hearty and nutritious dish featuring tempeh, fresh seasonal vegetables, and a light, flavourful sauce.',
+      'Premium fatty tuna belly nigiri, melts softly in your mouth for the ultimate umami.',
     blogLink: '#'
   }
 ]
