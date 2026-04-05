@@ -165,21 +165,19 @@ END:VCALENDAR`
                 : "A network error occurred. Please try again or use the secure manual form below."}
             </p>
             
-            {/* Fallback standard form for activation */}
-            <form action='https://formsubmit.co/panhongwei1994@gmail.com' method='POST' target='_blank' className='w-full'>
-              <input type='hidden' name='_subject' value='New Table Reservation (Manual)!' />
-              <input type='hidden' name='name' value={bookingData?.name || 'User'} />
-              <input type='hidden' name='email' value={bookingData?.email || ''} />
-              <input type='hidden' name='phone' value={bookingData?.phone || ''} />
-              <input type='hidden' name='date' value={bookingData?.date || ''} />
-              <input type='hidden' name='time' value={bookingData?.time || ''} />
-              <input type='hidden' name='guests' value={bookingData?.guests || ''} />
-              <input type='hidden' name='Booking Reference' value={bookingRef} />
-              
-              <Button type='submit' className='w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90'>
-                Activate Secure Submission
+            {/* Fallback direct link for activation */}
+            <div className='w-full space-y-3'>
+              <Button asChild className='w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90'>
+                <a 
+                  href={`https://formsubmit.co/panhongwei1994@gmail.com?_subject=Activation+from+Sushi+Zen&name=${encodeURIComponent(bookingData?.name || 'User')}&email=${encodeURIComponent(bookingData?.email || '')}&phone=${encodeURIComponent(bookingData?.phone || '')}&date=${encodeURIComponent(bookingData?.date || '')}&time=${encodeURIComponent(bookingData?.time || '')}&guests=${encodeURIComponent(bookingData?.guests || '')}&reference=${encodeURIComponent(bookingRef)}`} 
+                  target='_blank' 
+                  rel='noreferrer'
+                >
+                  Activate Secure Submission (Direct Link)
+                </a>
               </Button>
-            </form>
+              <p className='text-[10px] text-zinc-500'>Clicking this will open a new secure tab to confirm your email.</p>
+            </div>
             
             <button 
               onClick={() => setErrorStatus('none')}
