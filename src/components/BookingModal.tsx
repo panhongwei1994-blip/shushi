@@ -19,18 +19,31 @@ export function BookingModal({ children }: { children: React.ReactNode }) {
     setStatus('submitting')
 
     const formData = new FormData(e.currentTarget)
-    // Add _next to stop redirect and stay on page for AJAX
-    formData.append('_captcha', 'false')
+    const data: Record<string, string> = {}
+
+    formData.forEach((value, key) => {
+      data[key] = value.toString()
+    })
+
+    data['_captcha'] = 'false'
+    data['_template'] = 'table'
 
     try {
       const response = await fetch('https://formsubmit.co/ajax/panhongwei1994@gmail.com', {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(data),
       })
 
-      if (response.ok) {
+      const result = await response.json()
+
+      if (result.success) {
         setStatus('success')
       } else {
+        console.error('FormSubmit error:', result)
         setStatus('error')
       }
     } catch (error) {
