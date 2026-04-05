@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import { CheckCircle2, CalendarPlus, ExternalLink, Clock } from 'lucide-react'
+import { CheckCircle2, CalendarPlus, Clock } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -121,6 +121,43 @@ export function BookingModal({ children }: { children: React.ReactNode }) {
     return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&dates=${start}/${end}`
   }
 
+  const getIcsCalendarUrl = () => {
+    if (!submissionData) return ''
+
+    const title = 'Sushi Zen Reservation'
+    const details = `Reservation Code: ${reservationCode}\nGuests: ${submissionData.guests}\nPhone: ${submissionData.phone}`
+    
+    // Format: YYYYMMDDTHHMMSS
+    const dateStr = submissionData.date.replace(/-/g, '')
+    const timeStr = submissionData.time.replace(/:/g, '')
+    const start = `${dateStr}T${timeStr}00`
+    
+    // Default 1.5 hour duration
+    const startTimeParts = submissionData.time.split(':')
+    let endHour = parseInt(startTimeParts[0]) + 1
+    let endMin = parseInt(startTimeParts[1]) + 30
+    if (endMin >= 60) {
+      endHour += 1
+      endMin -= 60
+    }
+    const end = `${dateStr}T${endHour.toString().padStart(2, '0')}${endMin.toString().padStart(2, '0')}00`
+
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'BEGIN:VEVENT',
+      `DTSTART:${start}`,
+      `DTEND:${end}`,
+      `SUMMARY:${title}`,
+      `DESCRIPTION:${details.replace(/\n/g, '\\n')}`,
+      'LOCATION:Sushi Zen',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\n')
+
+    return `data:text/calendar;charset=utf-8,${encodeURIComponent(icsContent)}`
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -149,17 +186,28 @@ export function BookingModal({ children }: { children: React.ReactNode }) {
 
               <div className='grid grid-cols-1 gap-3'>
                 <p className='text-zinc-500 text-sm font-medium px-1'>Sync to Calendar</p>
-                <Button 
-                  asChild
-                  variant='outline'
-                  className='w-full justify-start gap-3 border-white/5 bg-white/5 hover:bg-white/10 text-white rounded-2xl h-12'
-                >
-                  <a href={getGoogleCalendarUrl()} target='_blank' rel='noreferrer'>
-                    <CalendarPlus className='size-5 text-primary' />
-                    <span>Add to Google Calendar</span>
-                    <ExternalLink className='size-3 ml-auto opacity-40' />
-                  </a>
-                </Button>
+                <div className='grid grid-cols-2 gap-3'>
+                  <Button 
+                    asChild
+                    variant='outline'
+                    className='w-full justify-start gap-2 border-white/5 bg-white/5 hover:bg-white/10 text-white rounded-2xl h-12 px-3'
+                  >
+                    <a href={getGoogleCalendarUrl()} target='_blank' rel='noreferrer'>
+                      <CalendarPlus className='size-5 text-primary shrink-0' />
+                      <span className='truncate text-xs'>Google</span>
+                    </a>
+                  </Button>
+                  <Button 
+                    asChild
+                    variant='outline'
+                    className='w-full justify-start gap-2 border-white/5 bg-white/5 hover:bg-white/10 text-white rounded-2xl h-12 px-3'
+                  >
+                    <a href={getIcsCalendarUrl()} download='reservation.ics'>
+                      <CalendarPlus className='size-5 text-primary shrink-0' />
+                      <span className='truncate text-xs'>Apple / Outlook</span>
+                    </a>
+                  </Button>
+                </div>
               </div>
 
               <div className='pt-2'>
