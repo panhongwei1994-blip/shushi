@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { CheckCircle2 } from 'lucide-react'
+import React, { useState, useMemo } from 'react'
+import { CheckCircle2, CalendarPlus, ExternalLink, Clock } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -13,18 +13,61 @@ import { Input } from '@/components/ui/input'
 
 export function BookingModal({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
+  const [reservationCode, setReservationCode] = useState('')
+  const [submissionData, setSubmissionData] = useState<any>(null)
+
+  // Configuration
+  const BUSINESS_HOURS = useMemo(() => ({
+    start: 11, // 11:00
+    end: 25,   // 01:00 next day (24 + 1)
+    breakStart: 15,
+    breakEnd: 17
+  }), [])
+
+  // Generate valid time slots
+  const timeSlots = useMemo(() => {
+    const slots = []
+
+    for (let h = BUSINESS_HOURS.start; h < BUSINESS_HOURS.end; h++) {
+      if (h >= BUSINESS_HOURS.breakStart && h < BUSINESS_HOURS.breakEnd) continue
+
+      const hour = h % 24
+      const displayHour = hour.toString().padStart(2, '0')
+
+      slots.push(`${displayHour}:00`)
+      slots.push(`${displayHour}:30`)
+    }
+
+    return slots
+  }, [BUSINESS_HOURS])
+
+  const today = new Date().toISOString().split('T')[0]
+
+  const generateCode = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+    let result = 'ZEN-'
+
+    for (let i = 0; i < 4; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+
+    return result
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setStatus('submitting')
 
-    const formData = new FormData(e.currentTarget)
+    const formDataObj = new FormData(e.currentTarget)
     const data: Record<string, string> = {}
 
-    formData.forEach((value, key) => {
+    formDataObj.forEach((value, key) => {
       data[key] = value.toString()
     })
 
+    const code = generateCode()
+
+    data['reservation_code'] = code
     data['_captcha'] = 'false'
     data['_template'] = 'table'
 
@@ -41,6 +84,8 @@ export function BookingModal({ children }: { children: React.ReactNode }) {
       const result = await response.json()
 
       if (result.success) {
+        setReservationCode(code)
+        setSubmissionData(data)
         setStatus('success')
       } else {
         console.error('FormSubmit error:', result)
@@ -52,107 +97,144 @@ export function BookingModal({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const getGoogleCalendarUrl = () => {
+    if (!submissionData) return ''
+
+    const title = encodeURIComponent('Sushi Zen Reservation')
+    const details = encodeURIComponent(`Reservation Code: ${reservationCode}\nGuests: ${submissionData.guests}\nPhone: ${submissionData.phone}`)
+    const dateStr = submissionData.date.replace(/-/g, '')
+    const timeStr = submissionData.time.replace(/:/g, '')
+    const start = `${dateStr}T${timeStr}00`
+
+    // Default 1.5 hour duration
+    const startTimeParts = submissionData.time.split(':')
+    let endHour = parseInt(startTimeParts[0]) + 1
+    let endMin = parseInt(startTimeParts[1]) + 30
+
+    if (endMin >= 60) {
+      endHour += 1
+      endMin -= 60
+    }
+
+    const end = `${dateStr}T${endHour.toString().padStart(2, '0')}${endMin.toString().padStart(2, '0')}00`
+
+    return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&dates=${start}/${end}`
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className='sm:max-w-[425px] border-zinc-800 bg-black/95 backdrop-blur-xl text-white !rounded-[2rem] [&>button]:text-zinc-400 [&>button]:hover:text-white [&>button]:opacity-100 [&>button]:transition-colors'>
-        <DialogHeader>
-          <DialogTitle className='text-2xl font-serif tracking-wide'>Reserve Your Table</DialogTitle>
-          <DialogDescription className='text-zinc-400'>
-            Join us for an unforgettable dining experience. Please fill out your details below.
-          </DialogDescription>
-        </DialogHeader>
-        {status === 'success' ? (
-          <div className='flex flex-col items-center justify-center py-12 text-center animate-in fade-in zoom-in duration-300'>
-            <div className='bg-primary/20 p-4 rounded-full mb-4'>
-              <CheckCircle2 className='size-12 text-primary' />
-            </div>
-            <h3 className='text-2xl font-serif mb-2'>Reservation Received!</h3>
-            <p className='text-zinc-400 max-w-[280px]'>
-              We've sent a confirmation details to your email. See you soon!
-            </p>
-            <Button 
-              onClick={() => setStatus('idle')} 
-              className='mt-8 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8'
-            >
-              Close
-            </Button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className='grid gap-5 mt-4'>
-            <input type='hidden' name='_subject' value='New Table Reservation!' />
+      <DialogContent className='sm:max-w-[440px] border-zinc-800 bg-black/95 backdrop-blur-xl text-white rounded-[2.5rem]! p-0 overflow-hidden'>
+        <div className='p-8'>
+          <DialogHeader className='mb-6'>
+            <DialogTitle className='text-3xl font-serif tracking-tight text-white mb-2 text-left'>
+              {status === 'success' ? 'Confirmed!' : 'Book a Table'}
+            </DialogTitle>
+            <DialogDescription className='text-zinc-400 text-left text-base italic'>
+              {status === 'success' ? 'Your culinary journey awaits.' : 'Experience the art of Sushi Zen.'}
+            </DialogDescription>
+          </DialogHeader>
 
-            <div className='grid gap-2'>
-              <label htmlFor='name' className='text-sm font-medium text-zinc-300'>
-                Full Name
-              </label>
-              <Input type='text' id='name' name='name' placeholder='John Doe' required className='bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus-visible:ring-primary' />
-            </div>
-            
-            <div className='grid grid-cols-2 gap-4'>
-              <div className='grid gap-2'>
-                <label htmlFor='phone' className='text-sm font-medium text-zinc-300'>
-                  Phone
-                </label>
-                <Input type='tel' id='phone' name='phone' placeholder='+1 234 567 890' required className='bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus-visible:ring-primary' />
+          {status === 'success' ? (
+            <div className='space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500'>
+              <div className='bg-white/5 border border-white/10 rounded-3xl p-6 text-center'>
+                <div className='bg-primary/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4'>
+                  <CheckCircle2 className='text-primary size-7' />
+                </div>
+                <p className='text-zinc-400 text-sm uppercase tracking-widest mb-1'>Reservation Code</p>
+                <h3 className='text-4xl font-mono font-bold text-white tracking-tighter'>{reservationCode}</h3>
               </div>
-              <div className='grid gap-2'>
-                <label htmlFor='email' className='text-sm font-medium text-zinc-300'>
-                  Email
-                </label>
-                <Input type='email' id='email' name='email' placeholder='john@example.com' required className='bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus-visible:ring-primary' />
-              </div>
-            </div>
 
-            <div className='grid grid-cols-2 gap-4'>
-              <div className='grid gap-2'>
-                <label htmlFor='date' className='text-sm font-medium text-zinc-300'>
-                  Date
-                </label>
-                <Input type='date' id='date' name='date' required className='bg-white/5 border-white/10 text-white focus-visible:ring-primary dark:[color-scheme:dark]' />
+              <div className='grid grid-cols-1 gap-3'>
+                <p className='text-zinc-500 text-sm font-medium px-1'>Sync to Calendar</p>
+                <Button 
+                  asChild
+                  variant='outline'
+                  className='w-full justify-start gap-3 border-white/5 bg-white/5 hover:bg-white/10 text-white rounded-2xl h-12'
+                >
+                  <a href={getGoogleCalendarUrl()} target='_blank' rel='noreferrer'>
+                    <CalendarPlus className='size-5 text-primary' />
+                    <span>Add to Google Calendar</span>
+                    <ExternalLink className='size-3 ml-auto opacity-40' />
+                  </a>
+                </Button>
               </div>
-              <div className='grid gap-2'>
-                <label htmlFor='time' className='text-sm font-medium text-zinc-300'>
-                  Time
-                </label>
-                <Input type='time' id='time' name='time' required className='bg-white/5 border-white/10 text-white focus-visible:ring-primary dark:[color-scheme:dark]' />
+
+              <div className='pt-2'>
+                <Button 
+                  onClick={() => setStatus('idle')} 
+                  className='w-full bg-white text-black hover:bg-zinc-200 rounded-2xl h-12 font-semibold transition-all'
+                >
+                  Close
+                </Button>
               </div>
             </div>
-            <div className='grid gap-2'>
-              <label htmlFor='guests' className='text-sm font-medium text-zinc-300'>
-                Number of Guests
-              </label>
-              <select 
-                id='guests' 
-                name='guests' 
-                required
-                className='flex h-10 w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50 appearance-none'
+          ) : (
+            <form onSubmit={handleSubmit} className='space-y-5'>
+              <div className='space-y-2'>
+                <label className='text-xs font-semibold uppercase tracking-wider text-zinc-500 ml-1'>Guest Information</label>
+                <Input name='name' placeholder='Your Name' required className='h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-primary' />
+                <div className='grid grid-cols-2 gap-3'>
+                  <Input name='phone' type='tel' placeholder='Phone' required className='h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-primary' />
+                  <Input name='email' type='email' placeholder='Email' required className='h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-primary' />
+                </div>
+              </div>
+
+              <div className='space-y-2'>
+                <label className='text-xs font-semibold uppercase tracking-wider text-zinc-500 ml-1'>Reservation Details</label>
+                <div className='grid grid-cols-2 gap-3'>
+                  <Input 
+                    name='date' 
+                    type='date' 
+                    min={today} 
+                    required 
+                    className='h-12 bg-white/5 border-white/10 rounded-2xl focus:ring-primary appearance-none dark:[color-scheme:dark]' 
+                  />
+                  <div className='relative'>
+                    <select 
+                      name='time' 
+                      required 
+                      className='flex h-12 w-full rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary appearance-none'
+                    >
+                      <option value='' className='bg-zinc-900'>Select Time</option>
+                      {timeSlots.map(time => (
+                        <option key={time} value={time} className='bg-zinc-900 text-white'>{time}</option>
+                      ))}
+                    </select>
+                    <Clock className='absolute right-4 top-1/2 -translate-y-1/2 size-4 text-zinc-500 pointer-events-none' />
+                  </div>
+                </div>
+                <select 
+                  name='guests' 
+                  required 
+                  className='flex h-12 w-full rounded-2xl border border-white/10 bg-white/5 px-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary appearance-none'
+                >
+                  <option value='' className='bg-zinc-900'>Number of Guests</option>
+                  {[1,2,3,4,5,6,7,8,9,10,11,12].map(n => (
+                    <option key={n} value={n} className='bg-zinc-900'>{n} {n === 1 ? 'Guest' : 'Guests'}</option>
+                  ))}
+                  <option value='12+' className='bg-zinc-900'>12+ Guests</option>
+                </select>
+              </div>
+
+              {status === 'error' && (
+                <div className='bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-sm text-center'>
+                  Something went wrong. Please try again.
+                </div>
+              )}
+
+              <Button 
+                type='submit' 
+                disabled={status === 'submitting'}
+                className='w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-2xl transition-all shadow-lg shadow-primary/20'
               >
-                <option value='' className='bg-zinc-900 text-zinc-500' disabled selected>Select guests</option>
-                {Array.from({ length: 12 }, (_, i) => i + 1).map(num => (
-                  <option key={num} value={num} className='bg-zinc-900 text-white'>
-                    {num} {num === 1 ? 'Guest' : 'Guests'}
-                  </option>
-                ))}
-                <option value='12+' className='bg-zinc-900 text-white'>12+ Guests</option>
-              </select>
-            </div>
-            
-            {status === 'error' && (
-              <p className='text-red-400 text-sm text-center'>Something went wrong. Please try again.</p>
-            )}
-
-            <Button 
-              type='submit' 
-              disabled={status === 'submitting'}
-              className='w-full mt-2 bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 rounded-full'
-            >
-              {status === 'submitting' ? 'Processing...' : 'Confirm Reservation'}
-            </Button>
-          </form>
-        )}
+                {status === 'submitting' ? 'Securing your table...' : 'Confirm Reservation'}
+              </Button>
+            </form>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   )
