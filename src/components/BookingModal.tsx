@@ -27,6 +27,7 @@ export function BookingModal({ children }: { children: React.ReactNode }) {
 
     const formData = new FormData(e.currentTarget)
     
+    
     // Generate a secure random Booking Reference Number
     const refNum = 'SZ-' + Math.random().toString(36).substring(2, 8).toUpperCase()
     formData.append('Booking Reference', refNum)
@@ -69,6 +70,7 @@ export function BookingModal({ children }: { children: React.ReactNode }) {
     const startDate = new Date(`${bookingData.date}T${bookingData.time}`)
     const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000)
     const formatGoogleDate = (d: Date) => d.toISOString().replace(/-|:|\.\d\d\d/g, '')
+    
     
     const params = new URLSearchParams({
       action: 'TEMPLATE',
@@ -135,16 +137,16 @@ END:VCALENDAR`
               </div>
             </div>
 
-            <div className='flex w-full flex-col gap-3 sm:flex-row'>
+            <div className='flex w-full flex-col gap-3 sm:flex-row relative z-50 pointer-events-auto'>
               <button 
                 onClick={() => window.open(getGoogleCalendarUrl(), '_blank')}
-                className='flex-1 rounded-xl border border-[#4285F4]/20 bg-[#4285F4]/10 py-3 text-sm font-semibold text-[#4285F4] transition-all hover:bg-[#4285F4]/20 cursor-pointer pointer-events-auto'
+                className='flex-1 rounded-xl border border-[#4285F4]/20 bg-[#4285F4]/10 py-3 text-sm font-semibold text-[#4285F4] transition-all hover:bg-[#4285F4]/20 cursor-pointer pointer-events-auto relative z-[100]!'
               >
                 Google Calendar
               </button>
               <button 
                 onClick={() => { window.location.href = getAppleCalendarUrl() }}
-                className='flex-1 rounded-xl bg-white/10 py-3 text-sm font-semibold text-white transition-all hover:bg-white/20 cursor-pointer pointer-events-auto'
+                className='flex-1 rounded-xl bg-white/10 py-3 text-sm font-semibold text-white transition-all hover:bg-white/20 cursor-pointer pointer-events-auto relative z-[100]!'
               >
                 Apple Calendar
               </button>
@@ -152,7 +154,7 @@ END:VCALENDAR`
             
             <button 
               onClick={() => setIsSuccess(false)}
-              className='mt-6 text-sm text-zinc-500 underline underline-offset-4 transition-colors hover:text-white cursor-pointer pointer-events-auto'
+              className='mt-6 text-sm text-zinc-500 underline underline-offset-4 transition-colors hover:text-white cursor-pointer pointer-events-auto relative z-[100]!'
             >
               Make another reservation
             </button>
@@ -171,7 +173,7 @@ END:VCALENDAR`
                 : "A network error occurred. Please try again with the manual link below."}
             </p>
             
-            <div className='w-full'>
+            <div className='w-full relative z-50 pointer-events-auto'>
               <button 
                 onClick={() => {
                   const form = document.createElement('form');
@@ -200,7 +202,7 @@ END:VCALENDAR`
                   form.submit();
                   document.body.removeChild(form);
                 }}
-                className='w-full rounded-full bg-primary py-4 text-sm font-bold text-primary-foreground shadow-lg transition-all hover:bg-primary/90 cursor-pointer pointer-events-auto'
+                className='w-full rounded-full bg-primary py-4 text-sm font-bold text-primary-foreground shadow-lg transition-all hover:bg-primary/90 cursor-pointer pointer-events-auto relative z-[100]!'
               >
                 CONFIRM DOMAIN ACTIVATION
               </button>
@@ -209,7 +211,7 @@ END:VCALENDAR`
             
             <button 
               onClick={() => setErrorStatus('none')}
-              className='mt-6 text-sm text-zinc-500 underline underline-offset-4 transition-colors hover:text-white cursor-pointer pointer-events-auto'
+              className='mt-6 text-sm text-zinc-500 underline underline-offset-4 transition-colors hover:text-white cursor-pointer pointer-events-auto relative z-[100]!'
             >
               Go back to edit info
             </button>
