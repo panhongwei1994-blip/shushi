@@ -165,26 +165,42 @@ END:VCALENDAR`
                 : "A network error occurred. Please try again or use the secure manual form below."}
             </p>
             
-            {/* Fallback standard form for activation */}
-            <form action='https://formsubmit.co/panhongwei1994@gmail.com' method='POST' target='_blank' className='w-full'>
-              <input type='hidden' name='_subject' value='New Table Reservation (Manual)!' />
-              <input type='hidden' name='name' value={bookingData?.name || 'User'} />
-              <input type='hidden' name='email' value={bookingData?.email || ''} />
-              <input type='hidden' name='phone' value={bookingData?.phone || ''} />
-              <input type='hidden' name='date' value={bookingData?.date || ''} />
-              <input type='hidden' name='time' value={bookingData?.time || ''} />
-              <input type='hidden' name='guests' value={bookingData?.guests || ''} />
-              <input type='hidden' name='Booking Reference' value={bookingRef} />
-              
-              <button 
-                type='submit' 
-                className='w-full rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground transition-all hover:bg-primary/90'
-                style={{ pointerEvents: 'auto', cursor: 'pointer' }}
+            {/* Fallback using dynamic JS form to GUARANTEE POST and avoid modal interference */}
+            <div className='w-full'>
+              <Button 
+                onClick={() => {
+                  const form = document.createElement('form');
+                  form.method = 'POST';
+                  form.action = 'https://formsubmit.co/panhongwei1994@gmail.com';
+                  form.target = '_blank';
+                  
+                  const addField = (name: string, value: string) => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = name;
+                    input.value = value;
+                    form.appendChild(input);
+                  };
+                  
+                  addField('_subject', 'Activation from Sushi Zen Live Site');
+                  addField('name', bookingData?.name || 'User');
+                  addField('email', bookingData?.email || '');
+                  addField('phone', bookingData?.phone || '');
+                  addField('date', bookingData?.date || '');
+                  addField('time', bookingData?.time || '');
+                  addField('guests', bookingData?.guests || '');
+                  addField('reference', bookingRef);
+                  
+                  document.body.appendChild(form);
+                  form.submit();
+                  document.body.removeChild(form);
+                }}
+                className='w-full rounded-full bg-primary py-6 text-sm font-bold text-primary-foreground shadow-lg transition-all hover:scale-[1.02] hover:bg-primary/90 active:scale-95'
               >
-                Activate Secure Booking Now
-              </button>
-            </form>
-            <p className='text-[10px] text-zinc-500'>This opens a secure window to verify your domain authority.</p>
+                Click to Open Secure Verification
+              </Button>
+            </div>
+            <p className='mt-2 text-[10px] text-zinc-500'>This opens a secure window to verify your domain authority using POST.</p>
             
             <button 
               onClick={() => setErrorStatus('none')}
