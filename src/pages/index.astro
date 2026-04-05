@@ -44,7 +44,7 @@ const schema = {
 ---
 
 <Layout title={pageTitle} description={pageDescription} keywords={pageKeywords} schema={schema}>
-  <HeroSectionPage menudata={menudata} client:only="react" />
+  <HeroSectionPage menudata={menudata} client:load />
   <PopularDishes popularDishes={popularDishes} client:load />
   <AboutUs stats={stats} />
   <Testimonials testimonials={testimonials} client:load />

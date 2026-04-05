@@ -6,11 +6,12 @@ import ThemeToggle from '@/components/layout/theme-toggle'
 import { MenuIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+
 
 import MenuDropdown from '@/components/blocks/menu-dropdown'
 import MenuNavigation from '@/components/blocks/menu-navigation'
 import type { NavigationSection } from '@/components/blocks/menu-navigation'
+import { BookingModal } from '@/components/BookingModal'
 
 import { cn } from '@/lib/utils'
 
@@ -112,24 +113,20 @@ const Header = ({ navigationData, className }: HeaderProps) => {
         {/* Actions */}
         <div className='flex items-center'>
           <ThemeToggle />
-          <Button
-            className='group relative ml-4 w-fit overflow-hidden rounded-full text-base before:absolute before:inset-0 before:rounded-[inherit] before:bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.5)_50%,transparent_75%,transparent_100%)] before:bg-[length:250%_250%,100%_100%] before:bg-[position:200%_0,0_0] before:bg-no-repeat before:transition-[background-position_0s_ease] before:duration-1000 hover:before:bg-[position:-100%_0,0_0] has-[>svg]:px-6 max-sm:hidden dark:before:bg-[linear-gradient(45deg,transparent_25%,rgba(0,0,0,0.2)_50%,transparent_75%,transparent_100%)]'
-            asChild
-          >
-            <a href='#contact-us'>Book table</a>
-          </Button>
+          <BookingModal>
+            <Button
+              className='before:bg-size-[250%_250%,100%_100%] before:bg-position-[200%_0,0_0] hover:before:bg-position-[-100%_0,0_0] group relative ml-4 w-fit overflow-hidden rounded-full text-base before:absolute before:inset-0 before:rounded-[inherit] before:bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.5)_50%,transparent_75%,transparent_100%)] before:bg-no-repeat before:transition-[background-position_0s_ease] before:duration-1000 has-[>svg]:px-6 max-sm:hidden dark:before:bg-[linear-gradient(45deg,transparent_25%,rgba(0,0,0,0.2)_50%,transparent_75%,transparent_100%)]'
+            >
+              Book table
+            </Button>
+          </BookingModal>
 
           {/* Mobile book table button */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button className='ml-4 rounded-full sm:hidden' asChild>
-                  <a href='#contact-us'>Book table</a>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Book table</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <BookingModal>
+            <Button className='ml-4 rounded-full sm:hidden'>
+              Book table
+            </Button>
+          </BookingModal>
 
           {/* Mobile menu button */}
           <MenuDropdown

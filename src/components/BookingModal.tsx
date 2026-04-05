@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -16,11 +16,14 @@ export function BookingModal({ children }: { children: React.ReactNode }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [bookingRef, setBookingRef] = useState('')
-  const [bookingData, setBookingData] = useState<{ date: string; time: string; guests: string } | null>(null)
+  const [bookingData, setBookingData] = useState<{ date: string; time: string; guests: string; name: string; email: string; phone: string } | null>(null)
+  const [errorStatus, setErrorStatus] = useState<'none' | 'activation_required' | 'network_error'>('none')
+  const formRef = useRef<HTMLFormElement>(null)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setErrorStatus('none')
 
     const formData = new FormData(e.currentTarget)
     
@@ -28,38 +31,43 @@ export function BookingModal({ children }: { children: React.ReactNode }) {
     const refNum = 'SZ-' + Math.random().toString(36).substring(2, 8).toUpperCase()
     formData.append('Booking Reference', refNum)
     
-    // Save details for calendar generation
+    // Save details
     const date = formData.get('date') as string
     const time = formData.get('time') as string
     const guests = formData.get('guests') as string
-    setBookingData({ date, time, guests })
+    const name = formData.get('name') as string
+    const email = formData.get('email') as string
+    const phone = formData.get('phone') as string
+    
+    setBookingData({ date, time, guests, name, email, phone })
     setBookingRef(refNum)
     
     try {
-      await fetch('https://formsubmit.co/ajax/panhongwei1994@gmail.com', {
+      const response = await fetch('https://formsubmit.co/ajax/panhongwei1994@gmail.com', {
         method: 'POST',
         headers: {
           'Accept': 'application/json'
         },
         body: formData,
       })
-      setIsSuccess(true)
+      
+      if (response.ok) {
+        setIsSuccess(true)
+      } else {
+        setErrorStatus('activation_required')
+      }
     } catch (error) {
       console.error(error)
-      alert("Failed to connect to the booking server. Please try again.")
+      setErrorStatus('network_error')
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  // Create calendar links
   const getGoogleCalendarUrl = () => {
     if (!bookingData?.date || !bookingData?.time) return '#'
-    // Convert local date/time to UTC strings for Google Calendar
     const startDate = new Date(`${bookingData.date}T${bookingData.time}`)
-    // Assume 2 hours reservation duration
     const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000)
-    
     const formatGoogleDate = (d: Date) => d.toISOString().replace(/-|:|\.\d\d\d/g, '')
     
     const params = new URLSearchParams({
@@ -75,7 +83,6 @@ export function BookingModal({ children }: { children: React.ReactNode }) {
     if (!bookingData?.date || !bookingData?.time) return '#'
     const startDate = new Date(`${bookingData.date}T${bookingData.time}`)
     const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000)
-    
     const formatICalDate = (d: Date) => d.toISOString().replace(/-|:|\.\d\d\d/g, '')
     
     const icalData = `BEGIN:VCALENDAR
@@ -93,66 +100,103 @@ END:VCALENDAR`
   }
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={(open) => { if(!open) { setIsSuccess(false); setErrorStatus('none'); } }}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className='sm:max-w-[425px] border-white/10 bg-black/95 backdrop-blur-xl text-white !rounded-[2rem]'>
+      <DialogContent className='rounded-[2rem]! border-white/10 bg-black/95 text-white backdrop-blur-xl sm:max-w-[425px]'>
         {isSuccess ? (
-          <div className='flex flex-col items-center justify-center py-6 text-center animate-in fade-in zoom-in duration-500'>
-            <div className='flex h-16 w-16 items-center justify-center rounded-full bg-green-500/20 text-green-400 mb-6 ring-8 ring-green-500/10'>
+          <div className='animate-in fade-in zoom-in flex flex-col items-center justify-center py-6 text-center duration-500'>
+            <div className='mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-500/20 text-green-400 ring-8 ring-green-500/10'>
               <svg xmlns='http://www.w3.org/2000/svg' className='h-8 w-8' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2.5}>
                 <path strokeLinecap='round' strokeLinejoin='round' d='M5 13l4 4L19 7' />
               </svg>
             </div>
-            <h3 className='text-3xl font-serif tracking-wide text-white mb-2'>Confirmed</h3>
+            <h3 className='font-serif text-3xl tracking-wide text-white mb-2'>Confirmed</h3>
             <p className='text-zinc-400 mb-6'>Your table has been successfully reserved.</p>
             
-            <div className='w-full rounded-2xl bg-white/5 border border-white/10 p-5 mb-8 text-left shadow-inner'>
-              <p className='text-xs text-zinc-500 uppercase tracking-wider mb-1 font-semibold'>Booking Reference</p>
-              <p className='text-2xl font-mono text-primary tracking-widest'>{bookingRef}</p>
+            <div className='mb-8 w-full rounded-2xl border border-white/10 bg-white/5 p-5 text-left shadow-inner'>
+              <p className='mb-1 text-xs font-semibold uppercase tracking-wider text-zinc-500'>Booking Reference</p>
+              <p className='font-mono text-2xl tracking-widest text-primary'>{bookingRef}</p>
               
               <div className='mt-5 flex gap-6 text-sm text-zinc-400'>
                 <div>
-                  <span className='block text-xs text-zinc-500 mb-0.5'>Date</span>
-                  <span className='text-white font-medium'>{bookingData?.date}</span>
+                  <span className='mb-0.5 block text-xs text-zinc-500'>Date</span>
+                  <span className='font-medium text-white'>{bookingData?.date}</span>
                 </div>
                 <div>
-                  <span className='block text-xs text-zinc-500 mb-0.5'>Time</span>
-                  <span className='text-white font-medium'>{bookingData?.time}</span>
+                  <span className='mb-0.5 block text-xs text-zinc-500'>Time</span>
+                  <span className='font-medium text-white'>{bookingData?.time}</span>
                 </div>
                 <div>
-                  <span className='block text-xs text-zinc-500 mb-0.5'>Guests</span>
-                  <span className='text-white font-medium'>{bookingData?.guests}</span>
+                  <span className='mb-0.5 block text-xs text-zinc-500'>Guests</span>
+                  <span className='font-medium text-white'>{bookingData?.guests}</span>
                 </div>
               </div>
             </div>
 
-            <div className='flex flex-col sm:flex-row gap-3 w-full'>
-              <Button asChild className='flex-1 bg-[#4285F4]/10 text-[#4285F4] hover:bg-[#4285F4]/20 border border-[#4285F4]/20 rounded-xl'>
+            <div className='flex w-full flex-col gap-3 sm:flex-row'>
+              <Button asChild className='flex-1 rounded-xl border border-[#4285F4]/20 bg-[#4285F4]/10 text-[#4285F4] hover:bg-[#4285F4]/20'>
                 <a href={getGoogleCalendarUrl()} target='_blank' rel='noreferrer'>Google Calendar</a>
               </Button>
-              <Button asChild className='flex-1 bg-white/10 hover:bg-white/20 text-white rounded-xl'>
+              <Button asChild className='flex-1 rounded-xl bg-white/10 text-white hover:bg-white/20'>
                 <a href={getAppleCalendarUrl()} download='sushi-zen-booking.ics'>Apple Calendar</a>
               </Button>
             </div>
             
             <button 
               onClick={() => setIsSuccess(false)}
-              className='mt-6 text-sm text-zinc-500 hover:text-white transition-colors underline underline-offset-4'
+              className='mt-6 text-sm text-zinc-500 underline underline-offset-4 transition-colors hover:text-white'
             >
               Make another reservation
+            </button>
+          </div>
+        ) : errorStatus !== 'none' ? (
+          <div className='animate-in fade-in zoom-in flex flex-col items-center justify-center py-6 text-center duration-500'>
+             <div className='mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/20 text-amber-400 ring-8 ring-amber-500/10'>
+              <svg xmlns='http://www.w3.org/2000/svg' className='h-8 w-8' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2.5}>
+                <path strokeLinecap='round' strokeLinejoin='round' d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' />
+              </svg>
+            </div>
+            <h3 className='font-serif text-2xl tracking-wide text-white mb-3'>Action Required</h3>
+            <p className='text-zinc-400 mb-6 max-w-[300px]'>
+              {errorStatus === 'activation_required' 
+                ? "This domain needs to be activated. Check your email for a FormSubmit confirmation link, or click below to submit via the secure form page once to activate." 
+                : "A network error occurred. Please try again or use the secure manual form below."}
+            </p>
+            
+            {/* Fallback standard form for activation */}
+            <form action='https://formsubmit.co/panhongwei1994@gmail.com' method='POST' target='_blank' className='w-full'>
+              <input type='hidden' name='_subject' value='New Table Reservation (Manual)!' />
+              <input type='hidden' name='name' value={bookingData?.name || 'User'} />
+              <input type='hidden' name='email' value={bookingData?.email || ''} />
+              <input type='hidden' name='phone' value={bookingData?.phone || ''} />
+              <input type='hidden' name='date' value={bookingData?.date || ''} />
+              <input type='hidden' name='time' value={bookingData?.time || ''} />
+              <input type='hidden' name='guests' value={bookingData?.guests || ''} />
+              <input type='hidden' name='Booking Reference' value={bookingRef} />
+              
+              <Button type='submit' className='w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90'>
+                Activate Secure Submission
+              </Button>
+            </form>
+            
+            <button 
+              onClick={() => setErrorStatus('none')}
+              className='mt-6 text-sm text-zinc-500 underline underline-offset-4 transition-colors hover:text-white'
+            >
+              Go back to edit info
             </button>
           </div>
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle className='text-2xl font-serif tracking-wide'>Reserve Your Table</DialogTitle>
+              <DialogTitle className='font-serif text-2xl tracking-wide'>Reserve Your Table</DialogTitle>
               <DialogDescription className='text-zinc-400'>
                 Join us for an unforgettable dining experience. Please fill out your details below.
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className='grid gap-5 mt-4'>
+            <form ref={formRef} onSubmit={handleSubmit} className='mt-4 grid gap-5'>
               <input type='hidden' name='_subject' value='New Table Reservation!' />
               <input type='hidden' name='_template' value='table' />
 
@@ -160,7 +204,7 @@ END:VCALENDAR`
                 <label htmlFor='name' className='text-sm font-medium text-zinc-300'>
                   Full Name
                 </label>
-                <Input type='text' id='name' name='name' placeholder='John Doe' required className='bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus-visible:ring-primary' />
+                <Input type='text' id='name' name='name' placeholder='John Doe' required className='focus-visible:ring-primary border-white/10 bg-white/5 text-white placeholder:text-zinc-500' />
               </div>
               
               <div className='grid grid-cols-2 gap-4'>
@@ -168,13 +212,13 @@ END:VCALENDAR`
                   <label htmlFor='phone' className='text-sm font-medium text-zinc-300'>
                     Phone
                   </label>
-                  <Input type='tel' id='phone' name='phone' placeholder='+1 234 567 890' required className='bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus-visible:ring-primary' />
+                  <Input type='tel' id='phone' name='phone' placeholder='+1 234 567 890' required className='focus-visible:ring-primary border-white/10 bg-white/5 text-white placeholder:text-zinc-500' />
                 </div>
                 <div className='grid gap-2'>
                   <label htmlFor='email' className='text-sm font-medium text-zinc-300'>
                     Email
                   </label>
-                  <Input type='email' id='email' name='email' placeholder='john@example.com' required className='bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus-visible:ring-primary' />
+                  <Input type='email' id='email' name='email' placeholder='john@example.com' required className='focus-visible:ring-primary border-white/10 bg-white/5 text-white placeholder:text-zinc-500' />
                 </div>
               </div>
 
@@ -183,13 +227,13 @@ END:VCALENDAR`
                   <label htmlFor='date' className='text-sm font-medium text-zinc-300'>
                     Date
                   </label>
-                  <Input type='date' id='date' name='date' required className='bg-white/5 border-white/10 text-white focus-visible:ring-primary dark:[color-scheme:dark]' />
+                  <Input type='date' id='date' name='date' required className='focus-visible:ring-primary border-white/10 bg-white/5 text-white dark:[color-scheme:dark]' />
                 </div>
                 <div className='grid gap-2'>
                   <label htmlFor='time' className='text-sm font-medium text-zinc-300'>
                     Time
                   </label>
-                  <Input type='time' id='time' name='time' required className='bg-white/5 border-white/10 text-white focus-visible:ring-primary dark:[color-scheme:dark]' />
+                  <Input type='time' id='time' name='time' required className='focus-visible:ring-primary border-white/10 bg-white/5 text-white dark:[color-scheme:dark]' />
                 </div>
               </div>
               <div className='grid gap-2'>
@@ -201,7 +245,7 @@ END:VCALENDAR`
                   name='guests' 
                   required
                   defaultValue=""
-                  className='flex h-10 w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50 appearance-none'
+                  className='focus-visible:ring-primary flex h-10 w-full appearance-none rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus-visible:ring-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50'
                 >
                   <option value='' className='bg-zinc-900 text-zinc-500' disabled>Select guests</option>
                   {Array.from({ length: 12 }, (_, i) => i + 1).map(num => (
@@ -213,7 +257,7 @@ END:VCALENDAR`
                 </select>
               </div>
               
-              <Button type='submit' disabled={isSubmitting} className='w-full mt-2 bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 rounded-full'>
+              <Button type='submit' disabled={isSubmitting} className='bg-primary hover:bg-primary/90 text-primary-foreground mt-2 w-full rounded-full transition-all duration-300'>
                 {isSubmitting ? 'Securing your table...' : 'Confirm Reservation'}
               </Button>
             </form>
