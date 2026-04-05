@@ -10,8 +10,8 @@ import { Separator } from '@/components/ui/separator'
 
 import { Button } from '@/components/ui/button'
 import { type CarouselApi, Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel'
-import { BookingModal } from '@/components/BookingModal'
 import { cn } from '@/lib/utils'
+import { BookingModal } from '@/components/BookingModal'
 
 export type MenuData = {
   id: number
@@ -117,7 +117,7 @@ const HeroSection = ({ menudata }: { menudata: MenuData[] }) => {
               <BookingModal>
                 <Button
                   size='lg'
-                  className='bg-primary/10 hover:bg-primary/20 text-primary rounded-full text-base cursor-pointer'
+                  className='bg-primary/10 hover:bg-primary/20 text-primary rounded-full text-base'
                 >
                   Book table
                 </Button>
@@ -151,7 +151,8 @@ const HeroSection = ({ menudata }: { menudata: MenuData[] }) => {
               loop: true
             }}
           >
-            {/* Removed the left/right blur gradient overlays */}
+            <div className='from-background pointer-events-none absolute inset-y-0 left-0 z-1 w-25 bg-gradient-to-r via-85% to-transparent' />
+            <div className='from-background pointer-events-none absolute inset-y-0 right-0 z-1 w-25 bg-gradient-to-l via-85% to-transparent' />
             <CarouselContent className='my-1 flex'>
               {menudata.map((item, index) => (
                 <CarouselItem
