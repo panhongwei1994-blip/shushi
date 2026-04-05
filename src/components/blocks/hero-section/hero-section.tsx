@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator'
 
 import { Button } from '@/components/ui/button'
 import { type CarouselApi, Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel'
+import { BookingModal } from '@/components/BookingModal'
 import { cn } from '@/lib/utils'
 
 export type MenuData = {
@@ -113,13 +114,14 @@ const HeroSection = ({ menudata }: { menudata: MenuData[] }) => {
                   <ArrowRightIcon className='transition-transform duration-200 group-hover:translate-x-0.5' />
                 </a>
               </Button>
-              <Button
-                size='lg'
-                asChild
-                className='bg-primary/10 hover:bg-primary/20 text-primary rounded-full text-base'
-              >
-                <a href='#contact-us'>Book table</a>
-              </Button>
+              <BookingModal>
+                <Button
+                  size='lg'
+                  className='bg-primary/10 hover:bg-primary/20 text-primary rounded-full text-base'
+                >
+                  Book table
+                </Button>
+              </BookingModal>
             </div>
           </div>
 

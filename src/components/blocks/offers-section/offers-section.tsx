@@ -1,5 +1,6 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { BookingModal } from '@/components/BookingModal'
 
 import { cn } from '@/lib/utils'
 
@@ -56,15 +57,28 @@ const Gallery = ({ galleryImage }: { galleryImage: GalleryImage }) => {
 
               {image.offerButton && (
                 <div className={cn('absolute', image.offerButton.className)}>
-                  <Button
-                    size='lg'
-                    asChild
-                    className={cn(
-                      'relative w-fit overflow-hidden rounded-full text-base before:absolute before:inset-0 before:rounded-[inherit] before:bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.5)_50%,transparent_75%,transparent_100%)] before:bg-[length:250%_250%,100%_100%] before:bg-[position:200%_0,0_0] before:bg-no-repeat before:transition-[background-position_0s_ease] before:duration-1000 group-hover:before:bg-[position:-100%_0,0_0] has-[>svg]:px-6 max-lg:px-3 max-sm:px-2.5 max-sm:text-sm dark:before:bg-[linear-gradient(45deg,transparent_25%,rgba(0,0,0,0.2)_50%,transparent_75%,transparent_100%)]'
-                    )}
-                  >
-                    <a href='#'>{image.offerButton.text}</a>
-                  </Button>
+                  {image.offerButton.text.toLowerCase().includes('book') || image.offerButton.text.toLowerCase().includes('reserve') ? (
+                    <BookingModal>
+                      <Button
+                        size='lg'
+                        className={cn(
+                          'relative w-fit overflow-hidden rounded-full text-base before:absolute before:inset-0 before:rounded-[inherit] before:bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.5)_50%,transparent_75%,transparent_100%)] before:bg-[length:250%_250%,100%_100%] before:bg-[position:200%_0,0_0] before:bg-no-repeat before:transition-[background-position_0s_ease] before:duration-1000 group-hover:before:bg-[position:-100%_0,0_0] has-[>svg]:px-6 max-lg:px-3 max-sm:px-2.5 max-sm:text-sm dark:before:bg-[linear-gradient(45deg,transparent_25%,rgba(0,0,0,0.2)_50%,transparent_75%,transparent_100%)]'
+                        )}
+                      >
+                        {image.offerButton.text}
+                      </Button>
+                    </BookingModal>
+                  ) : (
+                    <Button
+                      size='lg'
+                      asChild
+                      className={cn(
+                        'relative w-fit overflow-hidden rounded-full text-base before:absolute before:inset-0 before:rounded-[inherit] before:bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.5)_50%,transparent_75%,transparent_100%)] before:bg-[length:250%_250%,100%_100%] before:bg-[position:200%_0,0_0] before:bg-no-repeat before:transition-[background-position_0s_ease] before:duration-1000 group-hover:before:bg-[position:-100%_0,0_0] has-[>svg]:px-6 max-lg:px-3 max-sm:px-2.5 max-sm:text-sm dark:before:bg-[linear-gradient(45deg,transparent_25%,rgba(0,0,0,0.2)_50%,transparent_75%,transparent_100%)]'
+                      )}
+                    >
+                      <a href='#'>{image.offerButton.text}</a>
+                    </Button>
+                  )}
                 </div>
               )}
             </div>

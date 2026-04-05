@@ -57,7 +57,7 @@ export function BookingModal({ children }: { children: React.ReactNode }) {
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className='sm:max-w-[425px] border-white/10 bg-black/95 backdrop-blur-xl text-white !rounded-[2rem]'>
+      <DialogContent className='sm:max-w-[425px] border-zinc-800 bg-black/95 backdrop-blur-xl text-white !rounded-[2rem] [&>button]:text-zinc-400 [&>button]:hover:text-white [&>button]:opacity-100 [&>button]:transition-colors'>
         <DialogHeader>
           <DialogTitle className='text-2xl font-serif tracking-wide'>Reserve Your Table</DialogTitle>
           <DialogDescription className='text-zinc-400'>
@@ -75,8 +75,7 @@ export function BookingModal({ children }: { children: React.ReactNode }) {
             </p>
             <Button 
               onClick={() => setStatus('idle')} 
-              variant='outline' 
-              className='mt-8 border-white/10 hover:bg-white/5 rounded-full'
+              className='mt-8 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8'
             >
               Close
             </Button>
