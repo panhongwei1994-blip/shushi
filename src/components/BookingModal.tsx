@@ -104,9 +104,9 @@ END:VCALENDAR`
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className='rounded-[2rem]! border-white/10 bg-black/95 text-white backdrop-blur-xl sm:max-w-[425px]'>
+      <DialogContent className='border-white/10 bg-black/95 text-white backdrop-blur-xl sm:max-w-[425px] rounded-3xl!'>
         {isSuccess ? (
-          <div className='animate-in fade-in zoom-in flex flex-col items-center justify-center py-6 text-center duration-500'>
+          <div className='relative z-50 flex flex-col items-center justify-center py-6 text-center pointer-events-auto'>
             <div className='mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-500/20 text-green-400 ring-8 ring-green-500/10'>
               <svg xmlns='http://www.w3.org/2000/svg' className='h-8 w-8' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2.5}>
                 <path strokeLinecap='round' strokeLinejoin='round' d='M5 13l4 4L19 7' />
@@ -119,7 +119,7 @@ END:VCALENDAR`
               <p className='mb-1 text-xs font-semibold uppercase tracking-wider text-zinc-500'>Booking Reference</p>
               <p className='font-mono text-2xl tracking-widest text-primary'>{bookingRef}</p>
               
-              <div className='mt-5 flex gap-6 text-sm text-zinc-400'>
+              <div className='mt-5 flex gap-6 text-sm text-zinc-400 justify-between items-center'>
                 <div>
                   <span className='mb-0.5 block text-xs text-zinc-500'>Date</span>
                   <span className='font-medium text-white'>{bookingData?.date}</span>
@@ -136,23 +136,29 @@ END:VCALENDAR`
             </div>
 
             <div className='flex w-full flex-col gap-3 sm:flex-row'>
-              <Button asChild className='flex-1 rounded-xl border border-[#4285F4]/20 bg-[#4285F4]/10 text-[#4285F4] hover:bg-[#4285F4]/20'>
-                <a href={getGoogleCalendarUrl()} target='_blank' rel='noreferrer'>Google Calendar</a>
-              </Button>
-              <Button asChild className='flex-1 rounded-xl bg-white/10 text-white hover:bg-white/20'>
-                <a href={getAppleCalendarUrl()} download='sushi-zen-booking.ics'>Apple Calendar</a>
-              </Button>
+              <button 
+                onClick={() => window.open(getGoogleCalendarUrl(), '_blank')}
+                className='flex-1 rounded-xl border border-[#4285F4]/20 bg-[#4285F4]/10 py-3 text-sm font-semibold text-[#4285F4] transition-all hover:bg-[#4285F4]/20 cursor-pointer pointer-events-auto'
+              >
+                Google Calendar
+              </button>
+              <button 
+                onClick={() => { window.location.href = getAppleCalendarUrl() }}
+                className='flex-1 rounded-xl bg-white/10 py-3 text-sm font-semibold text-white transition-all hover:bg-white/20 cursor-pointer pointer-events-auto'
+              >
+                Apple Calendar
+              </button>
             </div>
             
             <button 
               onClick={() => setIsSuccess(false)}
-              className='mt-6 text-sm text-zinc-500 underline underline-offset-4 transition-colors hover:text-white'
+              className='mt-6 text-sm text-zinc-500 underline underline-offset-4 transition-colors hover:text-white cursor-pointer pointer-events-auto'
             >
               Make another reservation
             </button>
           </div>
         ) : errorStatus !== 'none' ? (
-          <div className='animate-in fade-in zoom-in flex flex-col items-center justify-center py-6 text-center duration-500'>
+          <div className='relative z-50 flex flex-col items-center justify-center py-6 text-center pointer-events-auto'>
              <div className='mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/20 text-amber-400 ring-8 ring-amber-500/10'>
               <svg xmlns='http://www.w3.org/2000/svg' className='h-8 w-8' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2.5}>
                 <path strokeLinecap='round' strokeLinejoin='round' d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' />
@@ -161,13 +167,12 @@ END:VCALENDAR`
             <h3 className='font-serif text-2xl tracking-wide text-white mb-3'>Action Required</h3>
             <p className='text-zinc-400 mb-6 max-w-[300px]'>
               {errorStatus === 'activation_required' 
-                ? "This domain needs to be activated. Check your email for a FormSubmit confirmation link, or click below to submit via the secure form page once to activate." 
-                : "A network error occurred. Please try again or use the secure manual form below."}
+                ? "This domain needs to be activated. Please click the button below to confirm your domain authority." 
+                : "A network error occurred. Please try again with the manual link below."}
             </p>
             
-            {/* Fallback using dynamic JS form to GUARANTEE POST and avoid modal interference */}
             <div className='w-full'>
-              <Button 
+              <button 
                 onClick={() => {
                   const form = document.createElement('form');
                   form.method = 'POST';
@@ -195,16 +200,16 @@ END:VCALENDAR`
                   form.submit();
                   document.body.removeChild(form);
                 }}
-                className='w-full rounded-full bg-primary py-6 text-sm font-bold text-primary-foreground shadow-lg transition-all hover:scale-[1.02] hover:bg-primary/90 active:scale-95'
+                className='w-full rounded-full bg-primary py-4 text-sm font-bold text-primary-foreground shadow-lg transition-all hover:bg-primary/90 cursor-pointer pointer-events-auto'
               >
-                Click to Open Secure Verification
-              </Button>
+                CONFIRM DOMAIN ACTIVATION
+              </button>
             </div>
-            <p className='mt-2 text-[10px] text-zinc-500'>This opens a secure window to verify your domain authority using POST.</p>
+            <p className='mt-3 text-[10px] text-zinc-500'>This opens a secure confirmation tab.</p>
             
             <button 
               onClick={() => setErrorStatus('none')}
-              className='mt-6 text-sm text-zinc-500 underline underline-offset-4 transition-colors hover:text-white'
+              className='mt-6 text-sm text-zinc-500 underline underline-offset-4 transition-colors hover:text-white cursor-pointer pointer-events-auto'
             >
               Go back to edit info
             </button>
